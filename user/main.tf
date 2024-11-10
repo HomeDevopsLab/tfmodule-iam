@@ -30,5 +30,5 @@ resource "aws_iam_policy" "this" {
 
 resource "aws_iam_user_policy_attachment" "this" {
   user       = aws_iam_user.this.name
-  policy_arn = var.full_access ? aws_iam_policy.full_access.arn : aws_iam_policy.change_password.arn
+  policy_arn = aws_iam_policy.this.arn
 }
