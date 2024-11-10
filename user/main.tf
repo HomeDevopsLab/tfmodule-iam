@@ -6,7 +6,7 @@ resource "aws_iam_user_login_profile" "this" {
   password_reset_required = true
 }
 
-data "aws_iam_policy_document" "this" {
+data "aws_iam_policy_document" "change_password" {
   statement {
     actions = [ "iam:ChangePassword" ]
     resources = [ aws_iam_user.this.arn ]
@@ -14,13 +14,21 @@ data "aws_iam_policy_document" "this" {
   }
 }
 
+data "aws_iam_policy_document" "full_access" {
+  statement {
+    actions = [ "*" ]
+    resources = [ "*" ]
+    effect = "Allow"
+  }
+}
+
 resource "aws_iam_policy" "this" {
-  name        = "ChangePassword"
-  description = "Allow users to change their own password"
-  policy      = data.aws_iam_policy_document.this.json
+  name        = "UserPolicy"
+  description = "User access policy"
+  policy      = var.full_access ? data.aws_iam_policy_document.full_access.json : data.aws_iam_policy_document.change_password.json
 }
 
 resource "aws_iam_user_policy_attachment" "this" {
   user       = aws_iam_user.this.name
-  policy_arn = aws_iam_policy.this.arn
+  policy_arn = var.full_access ? aws_iam_policy.full_access.arn : aws_iam_policy.change_password.arn
 }
