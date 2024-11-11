@@ -28,7 +28,7 @@ resource "aws_ssoadmin_managed_policy_attachment" "this" {
 }
 
 data "aws_identitystore_user" "this" {
-  for_each = tomap(var.access)
+  for_each = { for access in var.access : access.username => access }
   identity_store_id =  tolist(data.aws_ssoadmin_instances.this.identity_store_ids)[0]
   alternate_identifier {
     unique_attribute {
@@ -39,7 +39,7 @@ data "aws_identitystore_user" "this" {
 }
 
 resource "aws_ssoadmin_account_assignment" "this" {
-  for_each = tomap(var.access)
+  for_each = { for access in var.access : access.username => access }
   instance_arn = tolist(data.aws_ssoadmin_instances.this.arns)[0]
   permission_set_arn = aws_ssoadmin_permission_set.this[each.value.role_name].arn
   
