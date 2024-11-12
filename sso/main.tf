@@ -28,7 +28,7 @@ resource "aws_ssoadmin_managed_policy_attachment" "this" {
 }
 
 data "aws_identitystore_user" "this" {
-  for_each = { for username in var.access : username => username }
+  for_each = tomap(var.access)
   identity_store_id =  tolist(data.aws_ssoadmin_instances.this.identity_store_ids)[0]
   alternate_identifier {
     unique_attribute {
