@@ -23,27 +23,6 @@ locals {
   ])
 }
 
-resource "null_resource" "terraform-debug" {
-  provisioner "local-exec" {
-    command = "echo $VARIABLE >> access_data.txt"
-
-    environment = {
-        VARIABLE = jsonencode(local.access_data)
-    }
-  }
-}
-
-resource "null_resource" "terraform-debug2" {
-  provisioner "local-exec" {
-    command = "echo $VARIABLE2 >> input_var.txt"
-
-    environment = {
-        VARIABLE2 = jsonencode(var.access)
-    }
-  }
-}
-
-
 data "aws_ssoadmin_instances" "this" {}
 
 resource "aws_ssoadmin_permission_set" "this" {
