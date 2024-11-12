@@ -1,5 +1,5 @@
 variable "access" {
-  type = map(object({
+  type = list(object({
     permissions = map(object({
       account_id = string
       role_name  = string
