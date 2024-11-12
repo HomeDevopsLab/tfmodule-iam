@@ -33,10 +33,21 @@ data "aws_identitystore_user" "this" {
   alternate_identifier {
     unique_attribute {
       attribute_path = "UserName"
-      attribute_value = each.value.username
+      attribute_value = each.key
     }
   }
 }
+
+# data "aws_identitystore_user" "this" {
+#   for_each = { for access in var.access : access.username => access }
+#   identity_store_id =  tolist(data.aws_ssoadmin_instances.this.identity_store_ids)[0]
+#   alternate_identifier {
+#     unique_attribute {
+#       attribute_path = "UserName"
+#       attribute_value = each.value.permissions[0].username
+#     }
+#   }
+# }
 
 resource "aws_ssoadmin_account_assignment" "this" {
   for_each = { for access in var.access : access.username => access }
