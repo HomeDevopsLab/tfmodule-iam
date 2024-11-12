@@ -50,15 +50,15 @@ data "aws_identitystore_user" "this" {
 # }
 
 resource "aws_ssoadmin_account_assignment" "this" {
-  for_each = flatten([
-    for key, val in var.access : [
-      for key2, val2 in val : {
-        username = key
-        account_id = val2.account_id
-        role_name = val2.role_name
+  for_each = tomap({
+    for user, permissions in var.access : user => {
+      for permission in permissions : permission => {
+        user = user
+        account_id = permission.account_id
+        role_name = permission.role_name
       }
-    ]
-  ])
+    }
+  })
   instance_arn = tolist(data.aws_ssoadmin_instances.this.arns)[0]
   permission_set_arn = aws_ssoadmin_permission_set.this[each.value.role_name].arn
   
