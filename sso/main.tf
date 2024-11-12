@@ -9,8 +9,28 @@ locals {
       policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
     }
   }
+
+  access_data = flatten([
+    for username, userdata  in var.access : [
+      for account_name, permission in userdata.permissions : {
+        username = username
+        account_name = account_name
+        account_id = permission.account_id
+        role_name = permission.role_name
+      }
+    ]
+  ])
 }
 
+resource "null_resource" "terraform-debug" {
+  provisioner "local-exec" {
+    command = "echo $VARIABLE >> debug.txt"
+
+    environment = {
+        VARIABLE = jsonencode(local.access_data)
+    }
+  }
+}
 data "aws_ssoadmin_instances" "this" {}
 
 resource "aws_ssoadmin_permission_set" "this" {
@@ -38,28 +58,9 @@ data "aws_identitystore_user" "this" {
   }
 }
 
-# data "aws_identitystore_user" "this" {
-#   for_each = { for access in var.access : access.username => access }
-#   identity_store_id =  tolist(data.aws_ssoadmin_instances.this.identity_store_ids)[0]
-#   alternate_identifier {
-#     unique_attribute {
-#       attribute_path = "UserName"
-#       attribute_value = each.value.permissions[0].username
-#     }
-#   }
-# }
-
 resource "aws_ssoadmin_account_assignment" "this" {
-  for_each = flatten([
-    for username, permissions_data  in var.access : [
-      for account_name, permission in permissions_data.permissions : {
-        username = username
-        account_name = account_name
-        account_id = permission.account_id
-        role_name = permission.role_name
-      }
-    ]
-  ])
+  for_each = tomap({ for accessconfig in local.access_data : "${accessconfig.permissions.accout_name}" => accessconfig })
+  
   instance_arn = tolist(data.aws_ssoadmin_instances.this.arns)[0]
   permission_set_arn = aws_ssoadmin_permission_set.this[each.value.role_name].arn
   
