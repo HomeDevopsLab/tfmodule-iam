@@ -13,6 +13,7 @@ locals {
   access_data = flatten([
     for username, userdata  in var.access : [
       for account_name, permission in userdata.permissions : {
+        id = "${username}-${account_name}"
         username = username
         account_name = account_name
         account_id = permission.account_id
@@ -61,7 +62,7 @@ data "aws_identitystore_user" "this" {
 
 resource "aws_ssoadmin_account_assignment" "this" {
   for_each = {
-    for access in local.access_data : "${access.username}-${access.account_name}" => access
+    for access in local.access_data : "${access.id}" => access
   }
   
   instance_arn = tolist(data.aws_ssoadmin_instances.this.arns)[0]
