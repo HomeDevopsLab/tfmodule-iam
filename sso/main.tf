@@ -28,7 +28,7 @@ resource "aws_ssoadmin_managed_policy_attachment" "this" {
 }
 
 data "aws_identitystore_user" "this" {
-  for_each = { for user in var.access : user => user }
+  for_each = { for username in var.access : username => username }
   identity_store_id =  tolist(data.aws_ssoadmin_instances.this.identity_store_ids)[0]
   alternate_identifier {
     unique_attribute {
@@ -50,11 +50,19 @@ data "aws_identitystore_user" "this" {
 # }
 
 resource "aws_ssoadmin_account_assignment" "this" {
-  for_each = { for user in data.aws_identitystore_user.this : user.key => user.value }
+  for_each = flatten([
+    for key, val in var.access : [
+      for key2, val2 in val : {
+        username = key
+        account_id = val2.account_id
+        role_name = val2.role_name
+      }
+    ]
+  ])
   instance_arn = tolist(data.aws_ssoadmin_instances.this.arns)[0]
-  permission_set_arn = aws_ssoadmin_permission_set.this[each.value.role_name].arn
+  permission_set_arn = aws_ssoadmin_permission_set.this[role_name].arn
   
-  principal_id = data.aws_identitystore_user.this[each.key].id
+  principal_id = data.aws_identitystore_user.this[user].id
   principal_type = "USER"
   
   target_id = each.value.account_id
