@@ -22,15 +22,6 @@ locals {
   ])
 }
 
-resource "null_resource" "terraform-debug" {
-  provisioner "local-exec" {
-    command = "echo $VARIABLE >> debug.txt"
-
-    environment = {
-        VARIABLE = jsonencode(local.access_data)
-    }
-  }
-}
 data "aws_ssoadmin_instances" "this" {}
 
 resource "aws_ssoadmin_permission_set" "this" {
@@ -59,7 +50,7 @@ data "aws_identitystore_user" "this" {
 }
 
 resource "aws_ssoadmin_account_assignment" "this" {
-  for_each = tomap({ for accessconfig in local.access_data : "${accessconfig.permissions.accout_name}" => accessconfig })
+  for_each = tomap({ for accessconfig in local.access_data : "${accessconfig.account_name}" => accessconfig })
   
   instance_arn = tolist(data.aws_ssoadmin_instances.this.arns)[0]
   permission_set_arn = aws_ssoadmin_permission_set.this[each.value.role_name].arn
