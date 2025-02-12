@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "this" {
     actions   = each.value.actions
     resources = each.value.resources
     effect    = each.value.effect
-    sid       = "custom-policy-${each.key}"
+    sid       = "CustomPolicy${each.key}"
   }
 }
 
