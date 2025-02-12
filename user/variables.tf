@@ -10,7 +10,7 @@ variable "password_reset_required" {
 
 variable "custom_policy" {
   description = "Custom policy to attach to the user"
-  type = list(map({
+  type = list(object({
     actions   = list(string)
     resources = list(string)
     effect    = string
@@ -23,3 +23,4 @@ variable "access_key" {
   type        = bool
   default     = false
 }
+
