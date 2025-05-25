@@ -1,5 +1,7 @@
 resource "aws_iam_user" "this" {
   name = var.name
+
+  tags = var.tags
 }
 resource "aws_iam_user_login_profile" "this" {
   user                    = aws_iam_user.this.name
@@ -10,6 +12,8 @@ resource "aws_iam_policy" "this" {
   name        = "CustomPolicy"
   description = "Custom access policy"
   policy      = var.custom_policy
+  
+  tags = var.tags
 }
 
 resource "aws_iam_user_policy_attachment" "this" {
