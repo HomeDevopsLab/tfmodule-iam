@@ -14,3 +14,8 @@ variable "access_key" {
   default     = false
 }
 
+variable "tags" {
+  description = "Tags attached to resources"
+  type = map(string)
+  default = {}
+}
