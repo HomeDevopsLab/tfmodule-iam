@@ -3,10 +3,6 @@ resource "aws_iam_user" "this" {
 
   tags = var.tags
 }
-resource "aws_iam_user_login_profile" "this" {
-  user                    = aws_iam_user.this.name
-  password_reset_required = false
-}
 
 resource "aws_iam_policy" "this" {
   name        = "CustomPolicy"
