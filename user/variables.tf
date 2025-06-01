@@ -14,6 +14,12 @@ variable "access_key" {
   default     = false
 }
 
+variable "key_rotation" {
+  description = "Force generate new access key"
+  type = bool
+  default = false
+}
+
 variable "tags" {
   description = "Tags attached to resources"
   type = map(string)
