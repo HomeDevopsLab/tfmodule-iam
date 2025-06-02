@@ -4,8 +4,8 @@ variable "name" {
 
 variable "custom_policy" {
   description = "Custom policy to attach to the user"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "access_key" {
@@ -16,12 +16,12 @@ variable "access_key" {
 
 variable "key_rotation" {
   description = "Force generate new access key"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "tags" {
   description = "Tags attached to resources"
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }

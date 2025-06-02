@@ -8,7 +8,7 @@ resource "aws_iam_policy" "this" {
   name        = "CustomPolicy"
   description = "Custom access policy"
   policy      = var.custom_policy
-  
+
   tags = var.tags
 }
 
@@ -17,21 +17,21 @@ resource "aws_iam_user_policy_attachment" "this" {
   policy_arn = aws_iam_policy.this.arn
 }
 
-resource "null_resource" "rotate_trigger" {
-  triggers = {
-    rotate = var.key_rotation ? timestamp() : "no"
+resource "random_id" "rotate" {
+  byte_length = 4
+  keepers = {
+    force_rotate = var.key_rotation ? timestamp() : "no"
   }
 }
 
 
 resource "aws_iam_access_key" "this" {
-  count = var.access_key ? 1 : 0
-  user  = aws_iam_user.this.name
-
-  depends_on = [ null_resource.rotate_trigger ]
+  for_each = var.access_key ? { "${random_id.rotate.hex}" = aws_iam_user.this.name } : {}
+  user     = each.value
 
   lifecycle {
     create_before_destroy = true
   }
+
 }
 
