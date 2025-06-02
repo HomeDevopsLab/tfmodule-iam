@@ -26,7 +26,7 @@ resource "random_id" "rotate" {
 
 
 resource "aws_iam_access_key" "this" {
-  for_each = var.access_key ? { "${random_id.rotate.hex}" = aws_iam_user.this.name } : {}
+  for_each = { "${random_id.rotate.hex}" = aws_iam_user.this.name }
   user     = each.value
 
   lifecycle {
