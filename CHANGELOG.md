@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [2.1.1] - 2025-07-04
+
+### Fixed
+
+- terraform plan error when access_key flag was set to false
+
 ## [2.1.0] - 2025-05-30
 
 ### Added
